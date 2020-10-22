@@ -70,28 +70,58 @@ func BenchmarkCronNextInactive(b *testing.B) {
 	}
 }
 
+/*
+	BenchmarkCronNextInactiveWithoutAlloc 	   66090	     17636 ns/op	       80 B/op	       1 allocs/op
+	BenchmarkCronNextInactiveWithAlloc    	   64130	     19098 ns/op	       96 B/op	       2 allocs/op
+*/
+func BenchmarkCronNextInactiveWithoutAlloc(b *testing.B) {
+	b.StopTimer()
+	loc, err := time.LoadLocation("America/Sao_Paulo")
+	if err != nil {
+		b.Fatal(err)
+	}
+	now := time.Date(2018, 11, 1, 0, 0, 0, 0, loc)
+	sched, _ := ParseStandard("* * 1-31 * *")
+	b.StartTimer()
+	time.Sleep(time.Second) // decoment this to see the allocs
+	for n := 0; n < b.N; n++ {
+		sched.NextInactive(now)
+	}
+}
+func BenchmarkCronNextInactiveWithAlloc(b *testing.B) {
+	b.StopTimer()
+	loc, err := time.LoadLocation("America/Sao_Paulo")
+	if err != nil {
+		b.Fatal(err)
+	}
+	now := time.Date(2018, 11, 1, 0, 0, 0, 0, loc)
+	sched, _ := ParseStandard("* * 1-31 * *")
+	b.StartTimer()
+	time.Sleep(time.Second) // decoment this to see the allocs
+	for n := 0; n < b.N; n++ {
+		sched.NextInactiveWithAlloc(now)
+	}
+}
+
 func TestNextInactive2(t *testing.T) {
 	sched, err := ParseStandard("* * 24 12 *")
 	if err != nil {
 		t.Error(err)
 	}
-    exp := time.Date(2020, 12, 25, 0, 0, 0, 0, time.UTC)
+	exp := time.Date(2020, 12, 25, 0, 0, 0, 0, time.UTC)
 
 	fromTime := time.Date(2020, 12, 24, 12, 59, 58, 0, time.UTC)
-	if tm := sched.NextInactive(fromTime); tm != exp{
+	if tm := sched.NextInactive(fromTime); tm != exp {
 		t.Errorf("Expected %+v, received %+v", exp, tm)
 	}
 
 	fromTime = time.Date(2020, 12, 24, 12, 59, 59, 0, time.UTC)
-	if tm := sched.NextInactive(fromTime); tm != exp{
+	if tm := sched.NextInactive(fromTime); tm != exp {
 		t.Errorf("Expected %+v, received %+v", exp, tm)
 	}
 
 	fromTime = time.Date(2020, 12, 24, 17, 0, 0, 0, time.UTC)
-	if tm := sched.NextInactive(fromTime); tm != exp{
+	if tm := sched.NextInactive(fromTime); tm != exp {
 		t.Errorf("Expected %+v, received %+v", exp, tm)
 	}
 }
-
-
-

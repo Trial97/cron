@@ -30,3 +30,8 @@ func (schedule ConstantDelaySchedule) Next(t time.Time) time.Time {
 func (schedule ConstantDelaySchedule) NextInactive(t time.Time) time.Time {
 	return time.Time{}
 }
+
+// NextInactive is a placeholder implementing Schedule interface
+func (schedule ConstantDelaySchedule) NextInactiveWithAlloc(t time.Time) time.Time {
+	return time.Time{}
+}

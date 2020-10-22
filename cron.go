@@ -44,6 +44,7 @@ type Schedule interface {
 
 	// NextInactive returns the next deactivation time, later than the given time.
 	NextInactive(time.Time) time.Time
+	NextInactiveWithAlloc(time.Time) time.Time
 }
 
 // EntryID identifies an entry within a Cron instance
